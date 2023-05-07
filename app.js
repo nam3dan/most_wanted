@@ -31,6 +31,8 @@ function searchPeopleDataSet(people) {
         ['id', 'name', 'traits']
     );
 
+
+
     let results = [];
     switch (searchTypeChoice) {
         case 'id':
@@ -40,8 +42,7 @@ function searchPeopleDataSet(people) {
             results = searchByName(people);
             break;
         case 'traits':
-            //! TODO
-            // results = searchByTraits(people);
+            results = searchByTraits(people);
             break;
         default:
             return searchPeopleDataSet(people);
@@ -58,10 +59,33 @@ function searchById(people) {
 }
 
 function searchByName(people) {
-    const firstNameToSearchFor = prompt('Please enter the the first name of the person you are searching for.');
-    const lastNameToSearchFor = prompt('Please enter the the last name of the person you are searching for.');
+    const firstNameToSearchFor = prompt('Please enter the first name of the person you are searching for.');
+    const lastNameToSearchFor = prompt('Please enter the last name of the person you are searching for.');
     const fullNameSearchResults = people.filter(person => (person.firstName.toLowerCase() === firstNameToSearchFor.toLowerCase() && person.lastName.toLowerCase() === lastNameToSearchFor.toLowerCase()));
     return fullNameSearchResults;
+}
+
+function searchByTraits(people){
+    const traitToSearchFor = prompt('Please enter the trait of the people you are searching for.');
+    const traitSearchResults = people.filter(person => (person.gender.toLowerCase() === traitToSearchFor.toLowerCase()) || (person.dob.toLowerCase() === traitToSearchFor.toLowerCase()) || person.height.toLowerCase() === traitToSearchFor.toLowerCase() || person.weight.toLowerCase() === traitToSearchFor.toLowerCase() || person.eyeColor.toLowerCase() === traitToSearchFor.toLowerCase());
+    return traitSearchResults;
+}
+
+    // "id": 272822514,
+    // "firstName": "Billy",
+    // "lastName": "Bob",
+    // "gender": "male",
+    // "dob": "1/18/1949",
+    // "height": 71,
+    // "weight": 175,
+    // "eyeColor": "brown",
+    // "occupation": "programmer",
+    // "parents": [],
+    // "currentSpouse": 401222887
+
+function displayPersonInfo(person){
+    const fullName = person.firstName + " " + person.lastName
+    alert(`Full Name: ${fullName}\nID: ${person.id}\nGender: ${person.gender}\nDOB: ${person.dob}\nheight: ${person.height}\nweight: ${person.weight}\nEye Color: ${person.eyeColor}\nOccupation: ${person.occupation}\nParents: ${person.parents}\nCurrent Spouse: ${person.parents}`);
 }
 
 function mainMenu(person, people) {
@@ -74,7 +98,7 @@ function mainMenu(person, people) {
     switch (mainMenuUserActionChoice) {
         case "info":
             //! TODO
-            // displayPersonInfo(person);
+            displayPersonInfo(person);
             break;
         case "family":
             //! TODO
