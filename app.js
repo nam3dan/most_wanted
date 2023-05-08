@@ -94,17 +94,6 @@ function searchByTraits(people, searchCount = 0) {
     return traitResults;
 }
 
-    // "id": 272822514,
-    // "firstName": "Billy",
-    // "lastName": "Bob",
-    // "gender": "male",
-    // "dob": "1/18/1949",
-    // "height": 71,
-    // "weight": 175,
-    // "eyeColor": "brown",
-    // "occupation": "programmer",
-    // "parents": [],
-    // "currentSpouse": 401222887
 
 function displayPersonInfo(person){
     const fullName = person.firstName + " " + person.lastName
@@ -126,24 +115,14 @@ function findPersonFamily(person,people) {
 }
 
 function findPersonDescendants(person, people) {
-    let personChildren = people.filter(function(el){
-        if (el.parents[0] == person.id || el.parents[1] == person.id){
-            el['relationship'] = "child";
-        }
-        return el.parents[0] == person.id || el.parents[1] == person.id;
-    });
-    let personGrandChildren = people.filter(function(el){
-        for (let index = 0; index < personChildren.length; index++) {
-            const element = array[index];
-            
-        }
-        if (el.parents[0] == person.id || el.parents[1] == person.id){
-            el['relationship'] = "grand child";
-        }
-        return el.parents[0] == person.id || el.parents[1] == person.id;
-    });
+    const descend = [];
+    const children = people.filter(el => el.parents.includes(person.id));
 
-    return personChildren;
+    children.forEach(child => {
+        descend.push(child);
+        descend = descend.concat(findPersonDescendants(child, people));
+    });
+    return descend;
 }
 
 function mainMenu(person, people) {
@@ -158,13 +137,12 @@ function mainMenu(person, people) {
             displayPersonInfo(person);
             break;
         case "family":
-            //! TODO
             let personFamily = findPersonFamily(person, people);
-            displayDescendants(`Family of ${person.firstName} ${person.lastName}`, personFamily);
+            displayPeople(`Family of ${person.firstName} ${person.lastName}`, personFamily);
             break;
         case "descendants":
             let personDescendants = findPersonDescendants(person, people);
-            displayDescendants('Descendants', personDescendants);
+            displayDescendants(`Descendants of ${person.firstName} ${person.lastName}`, personDescendants);
             break;
         case "quit":
             return;
@@ -175,12 +153,12 @@ function mainMenu(person, people) {
     return mainMenu(person, people);
 }
 
-function displayPeople(displayTitle, peopleToDisplay) {
+function displayDescendants(displayTitle, peopleToDisplay) {
     const formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName}`).join('\n');
     alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
 }
 
-function displayDescendants(displayTitle, peopleToDisplay) {
+function displayPeople(displayTitle, peopleToDisplay) {
     const formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName} : ${person.relationship}`).join('\n');
     alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
 }
