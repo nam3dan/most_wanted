@@ -67,17 +67,14 @@ function searchByName(people) {
 
 function searchByTraits(people, searchCount = 0) {
     const traitSearch = validatedPrompt('Please enter the trait you would like to search.', ['gender', 'dob', 'height', 'weight', 'eyeColor', 'occupation']);
-    let traitSpecifics = prompt(`Please enter the ${traitSearch} you would like to search for.`);
+    let trait = prompt(`Please enter the ${traitSearch} you would like to search.`);
     let traitResults;
 
     if (traitSearch == 'height' || traitSearch == 'weight') {
-        traitSpecifics = parseInt(traitSpecifics);
-        traitResults = people.filter(person => person[traitSearch] === traitSpecifics);
-    } else if (traitSearch === 'eyecolor') {
-        traitResults = people.filter(person => person.eyeColor === traitSpecifics);
-    }
-    else {
-        traitResults = people.filter(person => person[traitSearch]=== traitSpecifics);
+        trait = parseInt(trait);
+        traitResults = people.filter(person => person[traitSearch] == trait);
+    } else {
+        traitResults = people.filter(person => person[traitSearch] == trait);
     }
 
     if (traitResults.length > 1) {
@@ -85,13 +82,13 @@ function searchByTraits(people, searchCount = 0) {
             alert("Max number of traits Reached.");
             return traitResults;
         } else {
-            displayPeople(`People with ${traitSearch}: ${traitSpecifics}`, traitResults);
-            const nextLevel = validatedPrompt('Multiple people found. Do you want to further filter search?', ['yes', 'no']);
+            displayPeople(`People with ${traitSearch}: ${trait}`, traitResults);
+            const nextLevel = validatedPrompt('Multiple people found. Filter search?', ['yes', 'no']);
             if (nextLevel.toLowerCase() == 'yes') {
             traitResults = searchByTraits(traitResults , searchCount++);
             }
         }
-      } else if (traitResults.length === 0) {
+    } else if (traitResults.length == 0) {
         alert('No results found.');
     }
     return traitResults;
@@ -134,7 +131,18 @@ function findPersonDescendants(person, people) {
             el['relationship'] = "child";
         }
         return el.parents[0] == person.id || el.parents[1] == person.id;
-    })
+    });
+    let personGrandChildren = people.filter(function(el){
+        for (let index = 0; index < personChildren.length; index++) {
+            const element = array[index];
+            
+        }
+        if (el.parents[0] == person.id || el.parents[1] == person.id){
+            el['relationship'] = "grand child";
+        }
+        return el.parents[0] == person.id || el.parents[1] == person.id;
+    });
+
     return personChildren;
 }
 
