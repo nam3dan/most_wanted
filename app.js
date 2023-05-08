@@ -65,10 +65,36 @@ function searchByName(people) {
     return fullNameSearchResults;
 }
 
-function searchByTraits(people){
-    const traitToSearchFor = prompt('Please enter the trait of the people you are searching for.');
-    const traitSearchResults = people.filter(person => (person.gender.toLowerCase() === traitToSearchFor.toLowerCase()) || (person.dob.toLowerCase() === traitToSearchFor.toLowerCase()) || person.height.toLowerCase() === traitToSearchFor.toLowerCase() || person.weight.toLowerCase() === traitToSearchFor.toLowerCase() || person.eyeColor.toLowerCase() === traitToSearchFor.toLowerCase());
-    return traitSearchResults;
+function searchByTraits(people, searchCount = 0) {
+    const traitSearch = validatedPrompt('Please enter the trait you would like to search.', ['gender', 'dob', 'height', 'weight', 'eyeColor', 'occupation']);
+    let traitSpecifics = prompt(`Please enter the ${traitSearch} you would like to search for.`);
+    let traitResults;
+
+    if (traitSearch == 'height' || traitSearch == 'weight') {
+        traitSpecifics = parseInt(traitSpecifics);
+        traitResults = people.filter(person => person[traitSearch] === traitSpecifics);
+    } else if (traitSearch === 'eyecolor') {
+        traitResults = people.filter(person => person.eyeColor === traitSpecifics);
+    }
+    else {
+        traitResults = people.filter(person => person[traitSearch]=== traitSpecifics);
+    }
+
+    if (traitResults.length > 1) {
+        if (searchCount == 4) {
+            alert("Max number of traits Reached.");
+            return traitResults;
+        } else {
+            displayPeople(`People with ${traitSearch}: ${traitSpecifics}`, traitResults);
+            const nextLevel = validatedPrompt('Multiple people found. Do you want to further filter search?', ['yes', 'no']);
+            if (nextLevel.toLowerCase() == 'yes') {
+            traitResults = searchByTraits(traitResults , searchCount++);
+            }
+        }
+      } else if (traitResults.length === 0) {
+        alert('No results found.');
+    }
+    return traitResults;
 }
 
     // "id": 272822514,
@@ -88,6 +114,30 @@ function displayPersonInfo(person){
     alert(`Full Name: ${fullName}\nID: ${person.id}\nGender: ${person.gender}\nDOB: ${person.dob}\nheight: ${person.height}\nweight: ${person.weight}\nEye Color: ${person.eyeColor}\nOccupation: ${person.occupation}\nParents: ${person.parents}\nCurrent Spouse: ${person.parents}`);
 }
 
+function findPersonFamily(person,people) {
+    let personFamily = people.filter(function(el){
+        if (el.id == person.currentSpouse){
+            el['relationship'] = "spouse";
+        } else if (el.id == person.parents[0] || el.id == person.parents[1]){
+            el['relationship'] = "parent";
+        } else if (person.parents.includes(el.parents[0]) || person.parents.includes(el.parents[1]) && person.id != el.id){
+            el["relationship"] = "sibling";
+        }
+        return ((el.id == person.currentSpouse || el.id == person.parents[0] || el.id == person.parents[1] || person.parents.includes(el.parents[0]) || person.parents.includes(el.parents[1])) && person.id != el.id);
+    })
+    return personFamily;
+}
+
+function findPersonDescendants(person, people) {
+    let personChildren = people.filter(function(el){
+        if (el.parents[0] == person.id || el.parents[1] == person.id){
+            el['relationship'] = "child";
+        }
+        return el.parents[0] == person.id || el.parents[1] == person.id;
+    })
+    return personChildren;
+}
+
 function mainMenu(person, people) {
 
     const mainMenuUserActionChoice = validatedPrompt(
@@ -97,18 +147,16 @@ function mainMenu(person, people) {
 
     switch (mainMenuUserActionChoice) {
         case "info":
-            //! TODO
             displayPersonInfo(person);
             break;
         case "family":
             //! TODO
-            // let personFamily = findPersonFamily(person, people);
-            // displayPeople('Family', personFamily);
+            let personFamily = findPersonFamily(person, people);
+            displayDescendants(`Family of ${person.firstName} ${person.lastName}`, personFamily);
             break;
         case "descendants":
-            //! TODO
-            // let personDescendants = findPersonDescendants(person, people);
-            // displayPeople('Descendants', personDescendants);
+            let personDescendants = findPersonDescendants(person, people);
+            displayDescendants('Descendants', personDescendants);
             break;
         case "quit":
             return;
@@ -121,6 +169,11 @@ function mainMenu(person, people) {
 
 function displayPeople(displayTitle, peopleToDisplay) {
     const formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName}`).join('\n');
+    alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
+}
+
+function displayDescendants(displayTitle, peopleToDisplay) {
+    const formatedPeopleDisplayText = peopleToDisplay.map(person => `${person.firstName} ${person.lastName} : ${person.relationship}`).join('\n');
     alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
 }
 
